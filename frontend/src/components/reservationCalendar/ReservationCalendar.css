@@ -1,0 +1,116 @@
+.reservation-calendar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: #bfd4ff;
+  padding: 30px;
+}
+
+.date-range {
+  border-radius: 10px;
+}
+
+.name-input {
+  margin: 20px 0;
+  width: 200px;
+  height: 30px;
+  font-size: 20px;
+  border-radius: 5px;
+}
+.price-input {
+  margin: 20px 0;
+  width: 200px;
+  height: 30px;
+  font-size: 20px;
+  border-radius: 5px;
+}
+
+.confirm-button {
+  width: 150px;
+  height: 50px;
+  border-radius: 10px;
+  background: #3b46c6;
+  border: solid 2px #032c9f;
+  font-size: 15px;
+  color: white;
+}
+
+.confirm-button:hover {
+  background: #1722a0;
+}
+
+.inputs-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confirmed-reservations-container {
+  background: #e3ecff;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.reservation-info {
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 20px auto;
+}
+
+.list-item {
+  list-style: circle;
+}
+
+.info {
+  margin: 20px 0;
+}
+
+.alert {
+  color: white;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  position: fixed;
+  left: 26%;
+  top: 1%;
+  width: 45%;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* Estilos para mensajes de éxito */
+.success {
+  background-color: #4caf50; /* Color de fondo verde */
+}
+
+/* Estilos para mensajes de error */
+.error {
+  background-color: #f44336; /* Color de fondo rojo */
+}
+
+.delete-button {
+  width: 80px;
+  height: 30px;
+  border-radius: 10px;
+  background: #f44336;
+  border: solid 2px #bb2c22;
+  font-size: 15px;
+  color: white;
+  margin: 10px;
+}
+
+.delete-button:hover {
+  background: #c7362b;
+}

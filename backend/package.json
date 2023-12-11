@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npm install && npm run your_build_script",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

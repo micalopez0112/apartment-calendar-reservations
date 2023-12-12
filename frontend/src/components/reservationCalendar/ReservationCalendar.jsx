@@ -110,6 +110,12 @@ const ReservationCalendar = () => {
       if (!response.ok) {
         throw new Error("No se pudo eliminar la reserva");
       }
+      // Eliminar la reserva localmente después de la eliminación exitosa
+      const updatedReservations = reservations.filter(
+        (reservation) => reservation._id !== id
+      );
+      setReservations(updatedReservations);
+
       console.log("Reservation deleted successfully!");
       setAlertMessage("¡Reserva eliminada!"); // Establecer mensaje de alerta al eliminar
 

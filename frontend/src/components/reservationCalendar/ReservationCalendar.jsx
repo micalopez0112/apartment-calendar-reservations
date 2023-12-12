@@ -24,7 +24,7 @@ const ReservationCalendar = () => {
 
   const fetchReservations = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/reservations");
+      const response = await fetch(process.env.REACT_APP_API_URL);
       if (!response.ok) {
         throw new Error("Network response was not ok.");
       }
@@ -41,7 +41,7 @@ const ReservationCalendar = () => {
 
   const handleConfirmReservation = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/reservations", {
+      const response = await fetch(process.env.REACT_APP_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,12 +102,10 @@ const ReservationCalendar = () => {
 
   const eliminarReserva = async (id) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/reservations/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      console.log(id);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/${id}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         throw new Error("No se pudo eliminar la reserva");

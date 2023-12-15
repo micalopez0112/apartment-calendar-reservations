@@ -16,7 +16,7 @@ const ReservationCalendar = () => {
   const [name, setName] = useState("");
   const [pricePerNight, setPricePerNight] = useState("");
   const [reservations, setReservations] = useState([]);
-  const [alertMessage, setAlertMessage] = useState(null); // Nuevo estado para el mensaje de alerta
+  const [alertMessage, setAlertMessage] = useState(null);
 
   useEffect(() => {
     fetchReservations();
@@ -58,23 +58,21 @@ const ReservationCalendar = () => {
         throw new Error("Failed to confirm reservation.");
       }
 
-      // Agregar la nueva reserva a la lista localmente
       const newReservation = {
         startDate: selectedRange[0].startDate,
         endDate: selectedRange[0].endDate,
         name: name,
         pricePerNight: pricePerNight,
       };
-      setReservations([...reservations, newReservation]);
+      fetchReservations();
+      setName("");
+      setPricePerNight("");
 
-      console.log("Reservation confirmed successfully!");
-      setAlertMessage("¡Reserva confirmada!"); // Establecer mensaje de alerta al confirmar
+      setAlertMessage("¡Reserva confirmada!");
 
       setTimeout(() => {
-        setAlertMessage(null); // Eliminar el mensaje de alerta después de cierto tiempo (por ejemplo, 3 segundos)
-      }, 3000); // Tiempo en milisegundos (en este caso, 3 segundos)
-
-      console.log("Reservation confirmed successfully!");
+        setAlertMessage(null);
+      }, 3000);
     } catch (error) {
       console.error("Error confirming reservation:", error);
       setAlertMessage("Error al confirmar la reserva");
@@ -82,17 +80,11 @@ const ReservationCalendar = () => {
   };
 
   const formatDate = (dateString) => {
-    console.log(dateString);
     const date = new Date(dateString);
-
-    // Obtenemos el día, mes y año
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // +1 porque los meses empiezan desde 0
     const year = date.getFullYear();
-
-    // Creamos la cadena de fecha en formato dd/mm/yyyy
     const formattedDate = `${day}/${month}/${year}`;
-
     return formattedDate;
   };
 
@@ -102,7 +94,6 @@ const ReservationCalendar = () => {
 
   const eliminarReserva = async (id) => {
     try {
-      console.log(id);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/${id}`, {
         method: "DELETE",
       });
@@ -110,46 +101,98 @@ const ReservationCalendar = () => {
       if (!response.ok) {
         throw new Error("No se pudo eliminar la reserva");
       }
-      // Eliminar la reserva localmente después de la eliminación exitosa
+
       const updatedReservations = reservations.filter(
         (reservation) => reservation._id !== id
       );
       setReservations(updatedReservations);
-
-      console.log("Reservation deleted successfully!");
-      setAlertMessage("¡Reserva eliminada!"); // Establecer mensaje de alerta al eliminar
+      setAlertMessage("¡Reserva eliminada!");
 
       setTimeout(() => {
-        setAlertMessage(null); // Eliminar el mensaje de alerta después de cierto tiempo (por ejemplo, 3 segundos)
+        setAlertMessage(null);
       }, 3000);
 
-      // Eliminación exitosa, manejar cualquier lógica adicional si es necesaria
-      // Por ejemplo, volver a cargar las reservas actualizadas después de la eliminación
-      fetchReservations(); // Vuelve a cargar las reservas después de eliminar una
+      fetchReservations();
     } catch (error) {
       console.error("Error al eliminar la reserva:", error);
-      setAlertMessage("Error al eliminar la reserva"); // Establecer mensaje de alerta en caso de error
+      setAlertMessage("Error al eliminar la reserva");
     }
+  };
+
+  const getReservedDates = () => {
+    return reservations.map((reservation) => ({
+      startDate: new Date(reservation.startDate),
+      endDate: new Date(reservation.endDate),
+      key: `${reservation._id}`,
+    }));
+  };
+
+  const isReserved = (date) => {
+    return reservations.some(
+      (reservation) =>
+        date >= new Date(reservation.startDate) &&
+        date <= new Date(reservation.endDate)
+    );
+  };
+
+  const isDateRangeValid = (range) => {
+    return (
+      !range.startDate ||
+      !range.endDate ||
+      !isReserved(range.startDate) ||
+      !isReserved(range.endDate)
+    );
+  };
+
+  const handleDateRender = (date) => {
+    const formattedDay = date.getDate();
+
+    return (
+      <div
+        className={`day ${isReserved(date) ? "reserved-day" : ""}`}
+        style={{
+          backgroundColor: isReserved(date) ? "#ffd600" : "transparent",
+          pointerEvents: isReserved(date) ? "none" : "auto",
+          width: "100%",
+          color: "gray",
+        }}
+      >
+        {formattedDay}
+      </div>
+    );
+  };
+
+  const getBookedDates = () => {
+    const booked = [];
+    reservations.forEach((reservation) => {
+      const start = new Date(reservation.startDate);
+      const end = new Date(reservation.endDate);
+      const currentDate = new Date(start);
+
+      while (currentDate <= end) {
+        booked.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+    console.log("booked" + booked);
+    return booked;
   };
 
   return (
     <div>
       <div>
-        {/* Resto de tu JSX */}
         {alertMessage && (
           <div
             className={`alert ${
               alertMessage.includes("¡") ? "success" : "error"
             }`}
           >
-            {/* Mostrar el mensaje de alerta si existe */}
             {alertMessage}
           </div>
         )}
       </div>
       <div className="reservation-calendar-container">
         <div className="title">Reservas</div>
-
         <DateRange
           className="date-range"
           minDate={new Date()}
@@ -157,6 +200,8 @@ const ReservationCalendar = () => {
           onChange={handleSelect}
           moveRangeOnFirstSelection={false}
           ranges={selectedRange}
+          disabledDates={getBookedDates()}
+          dayContentRenderer={handleDateRender}
         />
 
         <div className="inputs-container">
